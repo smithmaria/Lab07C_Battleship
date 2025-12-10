@@ -63,6 +63,8 @@ public class Board {
             if (hitShip.isSunk()) {
                 checkGameWon();
                 return FireResult.SUNK;
+            } else {
+                checkGameWon();
             }
             return FireResult.HIT;
         } else {
@@ -115,8 +117,8 @@ public class Board {
                 boolean horizontal = random.nextBoolean();
 
                 // So ship does not get placed off of edge
-                int maxRow = horizontal ? BOARD_SIZE : BOARD_SIZE - shipSize;
-                int maxCol = horizontal ? BOARD_SIZE - shipSize : BOARD_SIZE;
+                int maxRow = horizontal ? BOARD_SIZE : BOARD_SIZE - shipSize + 1;
+                int maxCol = horizontal ? BOARD_SIZE - shipSize + 1 : BOARD_SIZE;
 
                 int row = random.nextInt(maxRow);
                 int col = random.nextInt(maxCol);

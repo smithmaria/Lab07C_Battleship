@@ -55,7 +55,7 @@ public class Ship {
 
         int hitIndex;                       // The index of tile that was hit on ship, again- starts left to right, top to bottom
         if (isHorizontal) {
-            hitIndex = row - startRow;
+            hitIndex = col - startCol;
         } else {
             hitIndex = row - startRow;
         }
