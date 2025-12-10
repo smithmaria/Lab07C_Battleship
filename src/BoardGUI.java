@@ -1,7 +1,5 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 /**
  * GUI for the Battleship game board.
@@ -13,6 +11,7 @@ public class BoardGUI extends JFrame {
     private JLabel statusLabel;
     private JLabel hitsLabel;
     private JLabel missesLabel;
+    private JLabel shipsLabel;
 
     /**
      * Constructor for BoardGUI
@@ -47,6 +46,7 @@ public class BoardGUI extends JFrame {
         statusLabel = new JLabel("Click to fire!");
         hitsLabel = new JLabel("Hits: 0");
         missesLabel = new JLabel("Misses: 0");
+        shipsLabel = new JLabel("Ships Sunk: 0");
     }
 
     /**
@@ -72,6 +72,8 @@ public class BoardGUI extends JFrame {
         statusPanel.add(hitsLabel);
         statusPanel.add(Box.createHorizontalStrut(20));
         statusPanel.add(missesLabel);
+        statusPanel.add(Box.createHorizontalStrut(20));
+        statusPanel.add(shipsLabel);
 
         // Button panel
         JPanel buttonPanel = new JPanel(new FlowLayout());
@@ -137,6 +139,12 @@ public class BoardGUI extends JFrame {
         hitsLabel.setText("Hits: " + game.getBoard().getTotalHits());
         missesLabel.setText("Misses: " + game.getBoard().getTotalMisses());
 
+        int sunkShips = 0;
+        for (Ship ship : game.getBoard().getShips()) {
+            if (ship.isSunk()) sunkShips++;
+        }
+        shipsLabel.setText("Ships Sunk: " + sunkShips);
+
         if (game.isGameOver()) {
             statusLabel.setText("You Win! All ships sunk!");
         } else {
@@ -176,5 +184,6 @@ public class BoardGUI extends JFrame {
         statusLabel.setText("Click to fire!");
         hitsLabel.setText("Hits: 0");
         missesLabel.setText("Misses: 0");
+        shipsLabel.setText("Ships Sunk: 0");
     }
 }

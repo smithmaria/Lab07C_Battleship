@@ -30,6 +30,11 @@ public class Game {
         // Update GUI
         gui.updateTile(row, col);
 
+        // Show ship sunk dialog
+        if (result == Board.FireResult.SUNK) {
+            javax.swing.JOptionPane.showMessageDialog(gui, "Ship Sunk!", "Hit!", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+        }
+
         // Check for game over
         if (board.isGameOver()) {
             gameOver = true;
