@@ -1,10 +1,10 @@
-import java.awt.*;
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 /**
- * Tracks the game board for Battleship on back-end.
+ * Represents the game board for Battleship.
  * Manages ship placement, firing attempts, and game state.
  */
 public class Board {
@@ -12,14 +12,17 @@ public class Board {
     private static final int[] SHIP_SIZES = {2, 3, 3, 4, 5};
 
     private List<Ship> ships;
-    private boolean[][] firedAt;    // Where player has fired
+    private boolean[][] firedAt;  // Track where player has fired
     private int totalHits;
     private int totalMisses;
+    private int missCounter;
+    private int strikeCounter;
     private boolean gameWon;
+    private boolean gameLost;
     private Random random;
 
     public enum FireResult {
-        HIT, MISS, SUNK, ALREADY_FIRED
+        HIT, MISS, SUNK, STRIKE, ALREADY_FIRED, GAME_LOST
     }
 
     /**
@@ -30,7 +33,10 @@ public class Board {
         firedAt = new boolean[BOARD_SIZE][BOARD_SIZE];
         totalHits = 0;
         totalMisses = 0;
+        missCounter = 0;
+        strikeCounter = 0;
         gameWon = false;
+        gameLost = false;
         random = new Random();
         placeShipsRandomly();
     }
@@ -42,39 +48,51 @@ public class Board {
      * @return Result of the fire attempt
      */
     public FireResult makeMove(int row, int col) {
-        // Check for out of bounds
+        // Check bounds
         if (row < 0 || row >= BOARD_SIZE || col < 0 || col >= BOARD_SIZE) {
             return FireResult.MISS;
         }
 
-        // Check if already fired at
+        // Check if already fired here
         if (firedAt[row][col]) {
-            return FireResult.MISS;
+            return FireResult.ALREADY_FIRED;
         }
 
+        // Mark as fired
         firedAt[row][col] = true;
 
-        // Check if ship is hit, mark hit, check sunk
+        // Check if any ship is hit
         Ship hitShip = getShipAt(row, col);
         if (hitShip != null) {
             hitShip.markHit(row, col);
             totalHits++;
+            missCounter = 0; // Reset miss counter on hit
 
             if (hitShip.isSunk()) {
                 checkGameWon();
                 return FireResult.SUNK;
-            } else {
-                checkGameWon();
             }
             return FireResult.HIT;
         } else {
             totalMisses++;
+            missCounter++;
+
+            if (missCounter >= 5) {
+                strikeCounter++;
+                missCounter = 0;
+
+                if (strikeCounter >= 3) {
+                    gameLost = true;
+                    return FireResult.GAME_LOST;
+                }
+                return FireResult.STRIKE;
+            }
             return FireResult.MISS;
         }
     }
 
     /**
-     * Get the result without making a move (for preview when debugging)
+     * Get the result without making a move (for preview)
      * @param row Row coordinate
      * @param col Column coordinate
      * @return What the result would be
@@ -100,7 +118,10 @@ public class Board {
         firedAt = new boolean[BOARD_SIZE][BOARD_SIZE];
         totalHits = 0;
         totalMisses = 0;
+        missCounter = 0;
+        strikeCounter = 0;
         gameWon = false;
+        gameLost = false;
         placeShipsRandomly();
     }
 
@@ -115,10 +136,8 @@ public class Board {
             int attempts = 0;
             do {
                 boolean horizontal = random.nextBoolean();
-
-                // So ship does not get placed off of edge
-                int maxRow = horizontal ? BOARD_SIZE : BOARD_SIZE - shipSize + 1;
-                int maxCol = horizontal ? BOARD_SIZE - shipSize + 1 : BOARD_SIZE;
+                int maxRow = horizontal ? BOARD_SIZE : BOARD_SIZE - shipSize;
+                int maxCol = horizontal ? BOARD_SIZE - shipSize : BOARD_SIZE;
 
                 int row = random.nextInt(maxRow);
                 int col = random.nextInt(maxCol);
@@ -134,7 +153,7 @@ public class Board {
     }
 
     /**
-     * Check if a ship palcement is valid (doesn't overlap)
+     * Check if a ship placement is valid (doesn't overlap)
      * @param ship Ship to check
      * @return True if placement is valid
      */
@@ -147,7 +166,7 @@ public class Board {
             }
         }
 
-        // Check for overlap
+        // Check overlaps with existing ships
         for (Ship existingShip : ships) {
             if (ship.overlaps(existingShip)) {
                 return false;
@@ -185,9 +204,17 @@ public class Board {
         gameWon = true;
     }
 
-    // Getters
+    // Getter methods
     public boolean isGameOver() {
+        return gameWon || gameLost;
+    }
+
+    public boolean isGameWon() {
         return gameWon;
+    }
+
+    public boolean isGameLost() {
+        return gameLost;
     }
 
     public int getTotalHits() {
@@ -198,11 +225,19 @@ public class Board {
         return totalMisses;
     }
 
+    public int getMissCounter() {
+        return missCounter;
+    }
+
+    public int getStrikeCounter() {
+        return strikeCounter;
+    }
+
     public boolean hasFiredAt(int row, int col) {
         return firedAt[row][col];
     }
 
     public List<Ship> getShips() {
-        return new ArrayList<>(ships); // Returns copy for safety
+        return new ArrayList<>(ships); // Return copy for safety
     }
 }

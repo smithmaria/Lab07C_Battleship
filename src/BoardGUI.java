@@ -12,6 +12,7 @@ public class BoardGUI extends JFrame {
     private JLabel hitsLabel;
     private JLabel missesLabel;
     private JLabel shipsLabel;
+    private JLabel strikeLabel;
 
     /**
      * Constructor for BoardGUI
@@ -47,6 +48,7 @@ public class BoardGUI extends JFrame {
         hitsLabel = new JLabel("Hits: 0");
         missesLabel = new JLabel("Misses: 0");
         shipsLabel = new JLabel("Ships Sunk: 0");
+        strikeLabel = new JLabel("Strikes: 0");
     }
 
     /**
@@ -74,6 +76,8 @@ public class BoardGUI extends JFrame {
         statusPanel.add(missesLabel);
         statusPanel.add(Box.createHorizontalStrut(20));
         statusPanel.add(shipsLabel);
+        statusPanel.add(Box.createHorizontalStrut(20));
+        statusPanel.add(strikeLabel);
 
         // Button panel
         JPanel buttonPanel = new JPanel(new FlowLayout());
@@ -137,7 +141,8 @@ public class BoardGUI extends JFrame {
      */
     private void updateStatusLabels() {
         hitsLabel.setText("Hits: " + game.getBoard().getTotalHits());
-        missesLabel.setText("Misses: " + game.getBoard().getTotalMisses());
+        missesLabel.setText("Misses: " + game.getBoard().getMissCounter());
+        strikeLabel.setText("Strikes: " + game.getBoard().getStrikeCounter());
 
         int sunkShips = 0;
         for (Ship ship : game.getBoard().getShips()) {
@@ -146,7 +151,11 @@ public class BoardGUI extends JFrame {
         shipsLabel.setText("Ships Sunk: " + sunkShips);
 
         if (game.isGameOver()) {
-            statusLabel.setText("You Win! All ships sunk!");
+            if (game.getBoard().isGameWon()) {
+                statusLabel.setText("You Win! All ships sunk!");
+            } else {
+                statusLabel.setText("Game Over! You lost!");
+            }
         } else {
             statusLabel.setText("Click to fire!");
         }
@@ -185,5 +194,6 @@ public class BoardGUI extends JFrame {
         hitsLabel.setText("Hits: 0");
         missesLabel.setText("Misses: 0");
         shipsLabel.setText("Ships Sunk: 0");
+        strikeLabel.setText("Strikes: 0");
     }
 }
