@@ -36,7 +36,7 @@ public class Game {
         if (result == Board.FireResult.SUNK) {
             JOptionPane.showMessageDialog(gui, "Ship Sunk!", "Hit!", JOptionPane.INFORMATION_MESSAGE);
         } else if (result == Board.FireResult.STRIKE) {
-            JOptionPane.showMessageDialog(gui, "Strike! " + board.getStrikeCounter() + " strikes total.", "Strike!", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(gui, "Strike! " + board.getStrikeCounter() + " strike(s) total.", "Strike!", JOptionPane.WARNING_MESSAGE);
         } else if (result == Board.FireResult.GAME_LOST) {
             gameOver = true;
             int choice = JOptionPane.showConfirmDialog(gui, "Game Over! You lost after 3 strikes!\nPlay again?",
